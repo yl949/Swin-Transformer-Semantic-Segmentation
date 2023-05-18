@@ -22,14 +22,16 @@
       var textureLoader = new THREE.TextureLoader();
       var texture = textureLoader.load('https://outofdistribution.github.io/imgs/R0010174_20230110130505.JPG');
       var geometry = new THREE.SphereGeometry(500, 60, 40);
-//       geometry.scale(-1, 1, 1); // 翻转球体的法线
-      var material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide});
+      geometry.scale(-1, 1, 1); // 翻转球体的法线
+//       var material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide});
+      var material = new THREE.MeshBasicMaterial({ map: texture});
       var mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
 
       var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-      camera.position.set(0, 0, 0.1); // 将camera的初始位置设置在远离球体的位置
-      camera.lookAt(scene.position); // 将camera的视角指向场景中心
+      camera.position.set(0, 0, 0); // 将camera的初始位置设置在远离球体的位置
+//       camera.lookAt(scene.position); // 将camera的视角指向场景中心
+      camera.lookAt(new THREE.Vector3(0, 0, -1));
 
       var renderer = new THREE.WebGLRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
