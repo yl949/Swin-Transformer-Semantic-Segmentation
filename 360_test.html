@@ -1,0 +1,61 @@
+<!--
+ * @Author: gleelin gleelin@tencent.com
+ * @Date: 2023-05-18 15:34:55
+ * @LastEditors: gleelin gleelin@tencent.com
+ * @LastEditTime: 2023-05-18 16:58:36
+ * @FilePath: \360影像\360_test.html
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>pan-image-liulan</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script>
+      var scene = new THREE.Scene();
+      var textureLoader = new THREE.TextureLoader();
+      var texture = textureLoader.load('https://www.gstatic.com/webp/gallery/1.jpg');
+      var geometry = new THREE.SphereGeometry(500, 60, 40);
+      var material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide});
+      var mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      camera.position.set(0, 0, 0.1); // 将camera的初始位置设置在远离球体的位置
+      camera.lookAt(scene.position); // 将camera的视角指向场景中心
+
+      var renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x000000);
+      document.body.appendChild(renderer.domElement);
+
+      var controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = true;
+      controls.enablePan = false;
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.1;
+      controls.rotateSpeed = 0.1;
+
+      function render() {
+        requestAnimationFrame(render);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+      render();
+    </script>
+  </body>
+</html>
