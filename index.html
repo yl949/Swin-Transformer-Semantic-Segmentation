@@ -21,10 +21,12 @@
       var scene = new THREE.Scene();
       var textureLoader = new THREE.TextureLoader();
       var texture = textureLoader.load('https://outofdistribution.github.io/imgs/R0010174_20230110130505.JPG');
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.repeat.set(-1, 1); // 翻转纹理的u坐标
       var geometry = new THREE.SphereGeometry(500, 60, 40);
 //       geometry.scale(-1, 1, 1); // 翻转球体的法线
-//       var material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide});
-      var material = new THREE.MeshBasicMaterial({ map: texture});
+      var material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide});
+//       var material = new THREE.MeshBasicMaterial({ map: texture});
       var mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
 
