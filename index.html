@@ -22,7 +22,7 @@
       var textureLoader = new THREE.TextureLoader();
       var texture = textureLoader.load('https://outofdistribution.github.io/imgs/R0010174_20230110130505.JPG');
       var geometry = new THREE.SphereGeometry(500, 60, 40);
-      var material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide});
+      var material = new THREE.MeshBasicMaterial({ map: texture});
       var mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
 
