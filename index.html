@@ -92,11 +92,16 @@
         camera.lookAt(x, y, z);
       }
 
-      function onPointerDown(event) {
+     function onPointerDown(event) {
+        if ( event.touches && event.touches.length !== 1 ) return;
+        if ( event.button !== undefined && event.button !== 0 ) return;
+
         isUserInteracting = true;
 
-        onPointerDownMouseX = event.clientX;
-        onPointerDownMouseY = event.clientY;
+        // onPointerDownMouseX = event.clientX;
+        // onPointerDownMouseY = event.clientY;
+        onPointerDownMouseX = event.clientX || event.touches[ 0 ].pageX;
+        onPointerDownMouseY = event.clientY || event.touches[ 0 ].pageY;
 
         onPointerDownLon = lon;
         onPointerDownLat = lat;
@@ -104,12 +109,16 @@
 
       function onPointerMove(event) {
         if (isUserInteracting === true) {
-          lon = (onPointerDownMouseX - event.clientX) * 0.1 + onPointerDownLon;
-          lat = (event.clientY - onPointerDownMouseY) * 0.1 + onPointerDownLat;
+          // lon = (onPointerDownMouseX - event.clientX) * 0.1 + onPointerDownLon;
+          // lat = (event.clientY - onPointerDownMouseY) * 0.1 + onPointerDownLat;
+
+          lon = ( onPointerDownMouseX - ( event.clientX || event.touches[ 0 ].pageX ) ) * 0.1 + onPointerDownLon;
+          lat = ( ( event.clientY || event.touches[ 0 ].pageY ) - onPointerDownMouseY ) * 0.1 + onPointerDownLat;
         }
       }
 
       function onPointerUp() {
+        if ( event.touches && event.touches.length !== 0 ) return;
         isUserInteracting = false;
       }
 
