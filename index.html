@@ -63,6 +63,9 @@
         document.addEventListener('mousedown', onPointerDown);
         document.addEventListener('mousemove', onPointerMove);
         document.addEventListener('mouseup', onPointerUp);
+        document.addEventListener( 'touchstart', onPointerDown );
+        document.addEventListener( 'touchmove', onPointerMove );
+        document.addEventListener( 'touchend', onPointerUp );
         document.addEventListener('wheel', onDocumentMouseWheel);
         window.addEventListener('resize', onWindowResize);
       }
