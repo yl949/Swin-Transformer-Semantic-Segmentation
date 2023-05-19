@@ -85,11 +85,17 @@
         phi = THREE.MathUtils.degToRad(90 - lat);
         theta = THREE.MathUtils.degToRad(lon);
 
-        x = 100 * Math.sin(phi) * Math.cos(theta);
-        y = 100 * Math.cos(phi);
-        z = 100 * Math.sin(phi) * Math.sin(theta);
+//         x = 100 * Math.sin(phi) * Math.cos(theta);
+//         y = 100 * Math.cos(phi);
+//         z = 100 * Math.sin(phi) * Math.sin(theta);
 
-        camera.lookAt(x, y, z);
+//         camera.lookAt(x, y, z);
+        
+        camera.target.x = 100 * Math.sin( phi ) * Math.cos( theta );
+        camera.target.y = 100 * Math.cos( phi );
+        camera.target.z = 100 * Math.sin( phi ) * Math.sin( theta );
+
+        camera.lookAt( camera.target );
       }
 
      function onPointerDown(event) {
