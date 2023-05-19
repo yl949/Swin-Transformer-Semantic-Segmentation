@@ -18,46 +18,112 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
     <script>
-      var scene = new THREE.Scene();
-      var textureLoader = new THREE.TextureLoader();
-//       var texture = textureLoader.load('https://outofdistribution.github.io/imgs/R0010174_20230110130505.JPG');
-      var texture = textureLoader.load('./360_demo.JPG');
-      texture.wrapS = THREE.RepeatWrapping;
-      texture.repeat.set(-1, 1); // 翻转纹理的u坐标
-      var geometry = new THREE.SphereGeometry(500, 60, 40);
-      geometry.scale(-1, 1, 1); // 翻转球体的法线
-//       var material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide});
-      var material = new THREE.MeshBasicMaterial({ map: texture});
-      var mesh = new THREE.Mesh(geometry, material);
-      scene.add(mesh);
+      var camera, scene, renderer;
 
-      var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-//       camera.position.set(0, 0, 0.1); 
-//       camera.lookAt(scene.position); // 将camera的视角指向场景中心
-//       camera.position.set(scene.position); 
-//       camera.lookAt(new THREE.Vector3(0, 0, -1));
-//       camera.up.set(0, 1, 0);
-//       camera.position.set(0, 0, 0.1); 
-      camera.lookAt(scene.position); // 将camera的视角指向场景中心
+      var isUserInteracting = false,
+          onPointerDownMouseX = 0, onPointerDownMouseY = 0,
+          lon = 0, onPointerDownLon = 0,
+          lat = 0, onPointerDownLat = 0,
+          phi = 0, theta = 0;
 
-      var renderer = new THREE.WebGLRenderer();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setClearColor(0x000000);
-      document.body.appendChild(renderer.domElement);
+      init();
+      animate();
 
-      var controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableZoom = true;
-      controls.enablePan = false;
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.1;
-      controls.rotateSpeed = -0.1;
+      function init() {
+        var container = document.createElement('div');
+        document.body.appendChild(container);
 
-      function render() {
-        requestAnimationFrame(render);
-        controls.update();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+        camera.position.set(0, 0, 0); // 将相机放在原点
+        camera.lookAt(new THREE.Vector3(0, 0, 0)); // 将相机的视角指向场景中心
+
+        scene = new THREE.Scene();
+
+        var textureLoader = new THREE.TextureLoader();
+        var texture = textureLoader.load('./360_demo.JPG');
+        // texture.wrapS = THREE.RepeatWrapping;
+        // texture.repeat.set(-1, 1); // 翻转纹理的u坐标
+        var geometry = new THREE.SphereGeometry(500, 60, 40);
+        // 贴在球体外部，需要翻转法线
+        geometry.scale(-1, 1, 1); // 翻转球体的法线
+        var material = new THREE.MeshBasicMaterial({ map: texture });
+        
+        // 贴在球体内部，无需翻转法线
+        // var material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide }); // 将材质设置为只渲染球体的内部
+        var mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+        var mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000);
+        container.appendChild(renderer.domElement);
+
+        document.addEventListener('mousedown', onPointerDown);
+        document.addEventListener('mousemove', onPointerMove);
+        document.addEventListener('mouseup', onPointerUp);
+        document.addEventListener('wheel', onDocumentMouseWheel);
+        window.addEventListener('resize', onWindowResize);
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        update();
         renderer.render(scene, camera);
       }
-      render();
+
+      function update() {
+        if (isUserInteracting === false) {
+          lon += 0.1;
+        }
+
+        lat = Math.max(-85, Math.min(85, lat));
+        phi = THREE.MathUtils.degToRad(90 - lat);
+        theta = THREE.MathUtils.degToRad(lon);
+
+        camera.position.x = 100 * Math.sin(phi) * Math.cos(theta);
+        camera.position.y = 100 * Math.cos(phi);
+        camera.position.z = 100 * Math.sin(phi) * Math.sin(theta);
+
+        camera.lookAt(scene.position);
+      }
+
+      function onPointerDown(event) {
+        isUserInteracting = true;
+
+        onPointerDownMouseX = event.clientX;
+        onPointerDownMouseY = event.clientY;
+
+        onPointerDownLon = lon;
+        onPointerDownLat = lat;
+      }
+
+      function onPointerMove(event) {
+        if (isUserInteracting === true) {
+          lon = (onPointerDownMouseX - event.clientX) * 0.1 + onPointerDownLon;
+          lat = (event.clientY - onPointerDownMouseY) * 0.1 + onPointerDownLat;
+        }
+      }
+
+      function onPointerUp() {
+        isUserInteracting = false;
+      }
+
+      function onDocumentMouseWheel(event) {
+        var fov = camera.fov + event.deltaY * 0.05;
+
+        camera.fov = THREE.MathUtils.clamp(fov, 10, 75);
+
+        camera.updateProjectionMatrix();
+      }
+
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
     </script>
   </body>
 </html>
